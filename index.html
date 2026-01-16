@@ -525,24 +525,27 @@
                              <p class="text-gray-500 mt-4 text-lg">Tell us about your vision, and we'll take it from there.</p>
                         </div>
                         
-                        <form class="space-y-6" onsubmit="event.preventDefault(); alert('Message sent! (Demo)');">
+                        <!-- AJAX Formspree Integration -->
+                        <form id="contact-form" class="space-y-6" action="https://formspree.io/f/mqeeezgr" method="POST">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Name</label>
-                                    <input type="text" id="name" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow" placeholder="What's your name?">
+                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="name" name="name" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow" placeholder="What's your name?" required>
                                 </div>
                                 <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Email</label>
-                                    <input type="email" id="email" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow" placeholder="your@email.com">
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Email <span class="text-red-500">*</span></label>
+                                    <input type="email" id="email" name="email" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow" placeholder="your@email.com" required>
                                 </div>
                             </div>
                             <div>
-                                <label for="message" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Message</label>
-                                <textarea id="message" rows="5" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow resize-none" placeholder="Tell me about your project..."></textarea>
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Message <span class="text-red-500">*</span></label>
+                                <textarea id="message" name="message" rows="5" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow resize-none" placeholder="Tell me about your project..." required></textarea>
                             </div>
                             <button type="submit" class="w-full bg-apple-blue text-white font-medium text-lg px-8 py-4 rounded-full hover:bg-apple-hover transition-all transform active:scale-[0.98] shadow-lg shadow-blue-500/20">
                                 Send Message
                             </button>
+                            <!-- Form Status Message -->
+                            <div id="form-status" class="mt-4 text-center text-sm font-medium hidden"></div>
                         </form>
                     </div>
                 </div>
@@ -624,22 +627,18 @@
 
         // Router / Page Switching Logic (FIXED: NO BACKTICKS)
         function router(pageId) {
-            // Check if target page exists before doing anything
             var targetPageId = pageId + '-page';
             var targetPage = document.getElementById(targetPageId);
             
             if (targetPage) {
-                // Hide all pages
                 var sections = document.querySelectorAll('.page-section');
                 sections.forEach(function(section) {
                     section.classList.remove('active');
                 });
                 
-                // Show requested page
                 targetPage.classList.add('active');
-                window.scrollTo(0, 0); // Scroll to top
+                window.scrollTo(0, 0);
 
-                // Update Nav State
                 var links = document.querySelectorAll('.nav-link');
                 links.forEach(function(link) {
                     link.classList.remove('active');
@@ -650,8 +649,6 @@
                 if (activeLink) {
                     activeLink.classList.add('active');
                 }
-            } else {
-                console.warn('Page not found:', targetPageId);
             }
         }
 
@@ -671,7 +668,6 @@
             const data = projectData[projectId];
             if (!data) return;
 
-            // Using standard strings concatenation to be safe
             var tagsHtml = data.tags.map(function(tag) {
                 return '<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">' + tag + '</span>';
             }).join('');
@@ -726,6 +722,56 @@
             menu.classList.toggle('hidden');
         }
         document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+        // AJAX Form Submission
+        var contactForm = document.getElementById("contact-form");
+        
+        async function handleSubmit(event) {
+            event.preventDefault();
+            var status = document.getElementById("form-status");
+            var btn = contactForm.querySelector('button[type="submit"]');
+            var originalBtnText = btn.innerText;
+
+            status.classList.remove('hidden');
+            status.innerHTML = "Sending...";
+            status.className = "mt-4 text-center text-sm font-medium text-gray-500";
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+
+            var data = new FormData(event.target);
+            fetch(event.target.action, {
+                method: contactForm.method,
+                body: data,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    status.innerHTML = "Message sent successfully! We'll be in touch.";
+                    status.className = "mt-4 text-center text-sm font-medium text-green-600";
+                    contactForm.reset();
+                } else {
+                    response.json().then(data => {
+                        if (Object.hasOwn(data, 'errors')) {
+                            status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
+                        } else {
+                            status.innerHTML = "Oops! There was a problem submitting your form";
+                        }
+                        status.className = "mt-4 text-center text-sm font-medium text-red-600";
+                    })
+                }
+            }).catch(error => {
+                status.innerHTML = "Oops! There was a problem submitting your form";
+                status.className = "mt-4 text-center text-sm font-medium text-red-600";
+            }).finally(() => {
+                btn.disabled = false;
+                btn.innerText = originalBtnText;
+                setTimeout(() => {
+                    status.classList.add('hidden');
+                }, 5000); // Hide status after 5 seconds
+            });
+        }
+        contactForm.addEventListener("submit", handleSubmit);
 
     </script>
 </body>
