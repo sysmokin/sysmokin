@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sysmokin | Multimedia Designer & Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        apple: {
+                            gray: '#F5F5F7',
+                            text: '#1D1D1F',
+                            blue: '#0071E3',
+                            hover: '#0077ED'
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Apple-style custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #d1d1d1;
+            border-radius: 20px;
+            border: 3px solid #ffffff;
+        }
+        
+        .glass-nav {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .bento-card {
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+        }
+        
+        .bento-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            cursor: pointer;
+        }
+
+        /* Explicit Keyframes for Safety */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Page Transitions */
+        .page-section {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .page-section.active {
+            display: block; /* Visible when active */
+        }
+
+        .nav-link.active {
+            color: #000000;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-white text-apple-text antialiased selection:bg-apple-blue selection:text-white flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" onclick="router('home')" class="text-xl font-semibold tracking-tight hover:opacity-70 transition-opacity">
+                        Sysmokin.
+                    </a>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" onclick="router('home')" id="nav-home" class="nav-link text-xs font-medium text-gray-500 hover:text-black transition-colors">Home</a>
+                    <a href="#" onclick="router('work')" id="nav-work" class="nav-link text-xs font-medium text-gray-500 hover:text-black transition-colors">Work</a>
+                    <a href="#" onclick="router('clients')" id="nav-clients" class="nav-link text-xs font-medium text-gray-500 hover:text-black transition-colors">Clients</a>
+                    <a href="#" onclick="router('about')" id="nav-about" class="nav-link text-xs font-medium text-gray-500 hover:text-black transition-colors">About</a>
+                    <a href="#" onclick="router('contact')" id="nav-contact" class="bg-black text-white px-5 py-2 rounded-full text-xs font-medium hover:bg-gray-800 transition-colors">Contact</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-500 hover:text-black focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-xl absolute w-full border-b border-gray-100 h-screen">
+            <div class="px-6 py-8 space-y-6">
+                <a href="#" onclick="router('home'); toggleMobileMenu()" class="block text-xl font-medium text-gray-800">Home</a>
+                <a href="#" onclick="router('work'); toggleMobileMenu()" class="block text-xl font-medium text-gray-800">Work</a>
+                <a href="#" onclick="router('clients'); toggleMobileMenu()" class="block text-xl font-medium text-gray-800">Clients</a>
+                <a href="#" onclick="router('about'); toggleMobileMenu()" class="block text-xl font-medium text-gray-800">About</a>
+                <a href="#" onclick="router('contact'); toggleMobileMenu()" class="block text-xl font-medium text-apple-blue">Contact Me</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="flex-grow pt-16">
+        
+        <!-- ================= HOME PAGE ================= -->
+        <div id="home-page" class="page-section active">
+            <!-- Hero Section -->
+            <section class="pt-20 pb-16 md:pt-32 md:pb-24 max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="order-2 md:order-1 animate-fade-in-up text-center md:text-left">
+                        <h1 class="text-5xl md:text-7xl font-semibold tracking-tight leading-[1.1] mb-6">
+                            Multimedia Designer <br>
+                            <span class="text-gray-400">& Web Developer</span>
+                        </h1>
+                        <p class="text-lg md:text-xl text-gray-500 max-w-md leading-relaxed mb-8 mx-auto md:mx-0">
+                            <span class="text-black font-medium">Clean design. Smart code.</span> <br>
+                            Focused on visuals and websites that elevate brands and tell stories clearly.
+                        </p>
+                        <div class="flex gap-4 justify-center md:justify-start">
+                            <a href="#" onclick="router('work')" class="bg-black text-white px-7 py-3.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-transform active:scale-95">
+                                View Projects
+                            </a>
+                            <a href="#" onclick="router('about')" class="bg-apple-gray text-apple-text px-7 py-3.5 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors">
+                                About Me
+                            </a>
+                        </div>
+                    </div>
+                    <div class="order-1 md:order-2 relative animate-fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="aspect-square md:aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-apple-gray shadow-lg relative group">
+                            <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=2070&auto=format&fit=crop" alt="Workspace" class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Work (Home Only - 3 Items) -->
+            <section class="py-20 bg-apple-gray">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                    <div class="mb-12 flex justify-between items-end">
+                        <div>
+                            <h2 class="text-3xl font-semibold tracking-tight">Recent Work</h2>
+                            <p class="text-gray-500 mt-2">Latest highlights from the studio.</p>
+                        </div>
+                        <a href="#" onclick="router('work')" class="hidden md:inline-flex items-center text-sm font-medium hover:text-apple-blue transition-colors group">
+                            View all projects 
+                            <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    </div>
+
+                    <!-- Custom 3-Item Grid for Home -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Item 1 (Full Width) -->
+                        <div class="bento-card group relative bg-white rounded-[2rem] overflow-hidden md:col-span-2 aspect-[16/9] md:aspect-[21/9] shadow-sm" onclick="openModal('project1')">
+                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1974&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Project 1">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80"></div>
+                            <div class="absolute bottom-0 left-0 p-8">
+                                <p class="text-white/80 text-sm font-medium mb-1">Web Development</p>
+                                <h3 class="text-white text-3xl font-semibold">EcoSphere Platform</h3>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 2 -->
+                        <div class="bento-card group relative bg-white rounded-[2rem] overflow-hidden aspect-square shadow-sm" onclick="openModal('project2')">
+                            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Project 2">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80"></div>
+                            <div class="absolute bottom-0 left-0 p-8">
+                                <p class="text-white/80 text-sm font-medium mb-1">App UI/UX</p>
+                                <h3 class="text-white text-2xl font-semibold">FinTrack Mobile</h3>
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="bento-card group relative bg-white rounded-[2rem] overflow-hidden aspect-square shadow-sm" onclick="openModal('project4')">
+                            <img src="https://images.unsplash.com/photo-1481487484168-9b930d5b7960?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Project 4">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80"></div>
+                            <div class="absolute bottom-0 left-0 p-8">
+                                <p class="text-white/80 text-sm font-medium mb-1">3D Motion Art</p>
+                                <h3 class="text-white text-2xl font-semibold">Abstract Motion</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 text-center md:hidden">
+                        <button onclick="router('work')" class="bg-white border border-gray-200 text-black px-8 py-3 rounded-full font-medium hover:bg-gray-50 transition-colors w-full">
+                            View All Projects
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expertise / Services (Stayed on Home) -->
+            <section class="py-24 max-w-7xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                    <div class="md:col-span-4">
+                        <h2 class="text-3xl font-semibold mb-6">Expertise</h2>
+                        <p class="text-gray-500 leading-relaxed">
+                            Combining technical depth with artistic vision to build brands that stand out.
+                        </p>
+                    </div>
+                    <div class="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div class="p-6 rounded-3xl bg-apple-gray hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-xl">🎨</div>
+                            <h3 class="font-semibold text-lg mb-2">Multimedia Design</h3>
+                            <p class="text-sm text-gray-500">Brand identity, motion graphics, and 3D visualization using industry-standard tools.</p>
+                        </div>
+                        <div class="p-6 rounded-3xl bg-apple-gray hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-xl">💻</div>
+                            <h3 class="font-semibold text-lg mb-2">Web Development</h3>
+                            <p class="text-sm text-gray-500">Responsive HTML/CSS, JavaScript interactivity, and modern framework implementation.</p>
+                        </div>
+                        <div class="p-6 rounded-3xl bg-apple-gray hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-xl">📱</div>
+                            <h3 class="font-semibold text-lg mb-2">UI/UX Design</h3>
+                            <p class="text-sm text-gray-500">Mobile-first user interfaces, prototyping, and user journey mapping.</p>
+                        </div>
+                        <div class="p-6 rounded-3xl bg-apple-gray hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-xl">✨</div>
+                            <h3 class="font-semibold text-lg mb-2">Art Direction</h3>
+                            <p class="text-sm text-gray-500">Curating visual styles and ensuring consistency across all digital touchpoints.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= WORK PAGE ================= -->
+        <div id="work-page" class="page-section">
+            <section class="pt-32 pb-12 bg-white">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight mb-6">Selected Work</h1>
+                    <p class="text-xl text-gray-500 max-w-2xl">A curated archive of projects exploring the intersection of design, technology, and user experience.</p>
+                </div>
+            </section>
+            
+            <section class="pb-24 bg-white">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                    <!-- Full Bento Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 md:grid-rows-3 gap-6 h-auto md:h-[1000px]">
+                        <!-- Project 1 (Large Square) -->
+                        <div class="bento-card group relative bg-apple-gray rounded-[2rem] overflow-hidden md:col-span-2 md:row-span-2 shadow-sm h-96 md:h-full" onclick="openModal('project1')">
+                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1974&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Project 1">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60"></div>
+                            <div class="absolute bottom-0 left-0 p-8">
+                                <p class="text-white/80 text-sm font-medium mb-1">Web Development</p>
+                                <h3 class="text-white text-3xl font-semibold">EcoSphere Platform</h3>
+                            </div>
+                        </div>
+
+                        <!-- Project 2 (Tall Portrait) -->
+                        <div class="bento-card group relative bg-apple-gray rounded-[2rem] overflow-hidden md:col-span-1 md:row-span-2 shadow-sm h-96 md:h-full" onclick="openModal('project2')">
+                            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Project 2">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60"></div>
+                            <div class="absolute bottom-0 left-0 p-8">
+                                <p class="text-white/80 text-sm font-medium mb-1">App UI/UX</p>
+                                <h3 class="text-white text-2xl font-semibold">FinTrack Mobile</h3>
+                            </div>
+                        </div>
+
+                        <!-- Project 3 (Standard) -->
+                        <div class="bento-card group relative bg-apple-gray rounded-[2rem] overflow-hidden md:col-span-1 md:row-span-1 shadow-sm h-72 md:h-full" onclick="openModal('project3')">
+                            <img src="https://images.unsplash.com/photo-1586717791821-3f44a5638d48?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Project 3">
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                            <div class="absolute top-0 left-0 p-6">
+                                <h3 class="text-gray-900 text-lg font-semibold bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full inline-block">Brand Identity</h3>
+                            </div>
+                        </div>
+
+                        <!-- Project 4 (Wide) -->
+                        <div class="bento-card group relative bg-apple-gray rounded-[2rem] overflow-hidden md:col-span-2 md:row-span-1 shadow-sm h-72 md:h-full" onclick="openModal('project4')">
+                            <img src="https://images.unsplash.com/photo-1481487484168-9b930d5b7960?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Project 4">
+                             <div class="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></div>
+                            <div class="absolute top-0 right-0 p-6">
+                                <h3 class="text-black text-lg font-semibold bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full inline-block">3D Motion Art</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= CLIENTS PAGE ================= -->
+        <div id="clients-page" class="page-section">
+            <section class="pt-32 pb-24 bg-white min-h-screen">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                    <div class="text-center md:text-left mb-16">
+                        <span class="text-apple-blue text-sm font-semibold tracking-wide uppercase mb-2 block">Collaboration</span>
+                        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight mb-6">Trusted by Innovative Teams.</h1>
+                        <p class="text-xl text-gray-500 max-w-2xl mx-auto md:mx-0">Partnering with forward-thinking companies to build digital excellence and meaningful brand stories.</p>
+                    </div>
+
+                    <!-- Client Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                        <!-- Client 1 -->
+                        <div class="group flex items-center justify-center p-12 bg-apple-gray rounded-[2rem] hover:bg-white hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gray-100">
+                            <!-- Replace with actual <img> tag -->
+                            <span class="text-xl font-bold text-gray-400 group-hover:text-black transition-colors">Brand One</span>
+                        </div>
+                        
+                        <!-- Client 2 -->
+                        <div class="group flex items-center justify-center p-12 bg-apple-gray rounded-[2rem] hover:bg-white hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gray-100">
+                            <span class="text-xl font-bold text-gray-400 group-hover:text-black transition-colors">Brand Two</span>
+                        </div>
+
+                        <!-- Client 3 -->
+                        <div class="group flex items-center justify-center p-12 bg-apple-gray rounded-[2rem] hover:bg-white hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gray-100">
+                            <span class="text-xl font-bold text-gray-400 group-hover:text-black transition-colors">Brand Three</span>
+                        </div>
+
+                        <!-- Client 4 -->
+                        <div class="group flex items-center justify-center p-12 bg-apple-gray rounded-[2rem] hover:bg-white hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gray-100">
+                            <span class="text-xl font-bold text-gray-400 group-hover:text-black transition-colors">Brand Four</span>
+                        </div>
+
+                        <!-- Client 5 -->
+                        <div class="group flex items-center justify-center p-12 bg-apple-gray rounded-[2rem] hover:bg-white hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gray-100">
+                            <span class="text-xl font-bold text-gray-400 group-hover:text-black transition-colors">Brand Five</span>
+                        </div>
+
+                        <!-- Client 6 -->
+                        <div class="group flex items-center justify-center p-12 bg-apple-gray rounded-[2rem] hover:bg-white hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gray-100">
+                            <span class="text-xl font-bold text-gray-400 group-hover:text-black transition-colors">Brand Six</span>
+                        </div>
+
+                        <!-- Client 7 -->
+                        <div class="group flex items-center justify-center p-12 bg-apple-gray rounded-[2rem] hover:bg-white hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gray-100">
+                            <span class="text-xl font-bold text-gray-400 group-hover:text-black transition-colors">Brand Seven</span>
+                        </div>
+
+                        <!-- Client 8 -->
+                        <div class="group flex items-center justify-center p-12 bg-apple-gray rounded-[2rem] hover:bg-white hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gray-100">
+                            <span class="text-xl font-bold text-gray-400 group-hover:text-black transition-colors">Brand Eight</span>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial Section -->
+                    <div class="mt-24 bg-black rounded-[3rem] p-8 md:p-16">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+                            <!-- Testimonial 1 -->
+                            <div class="flex flex-col justify-between h-full space-y-6">
+                                <blockquote class="text-lg md:text-xl font-medium text-white leading-relaxed">
+                                    "Sysmokin's rebrand perfectly captured our premium essence. The new website has directly contributed to a 40% increase in high-end bookings."
+                                </blockquote>
+                                <div class="text-gray-400 border-t border-gray-800 pt-6">
+                                    <p class="font-semibold text-white">LuxeClean</p>
+                                    <p class="text-sm">Operations Manager</p>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 2 -->
+                            <div class="flex flex-col justify-between h-full space-y-6">
+                                <blockquote class="text-lg md:text-xl font-medium text-white leading-relaxed">
+                                    "Professional, efficient, and incredibly talented. The corporate portal they developed is seamless and has streamlined our internal communications significantly."
+                                </blockquote>
+                                <div class="text-gray-400 border-t border-gray-800 pt-6">
+                                    <p class="font-semibold text-white">APEX Solutions Group</p>
+                                    <p class="text-sm">CTO</p>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 3 -->
+                            <div class="flex flex-col justify-between h-full space-y-6">
+                                <blockquote class="text-lg md:text-xl font-medium text-white leading-relaxed">
+                                    "Our portfolio looks stunning. Sysmokin has an eye for detail that is unmatched. We finally have a digital presence that matches the quality of our events."
+                                </blockquote>
+                                <div class="text-gray-400 border-t border-gray-800 pt-6">
+                                    <p class="font-semibold text-white">Alice Events Management</p>
+                                    <p class="text-sm">Founder</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= ABOUT PAGE ================= -->
+        <div id="about-page" class="page-section">
+            <section class="pt-32 pb-24 bg-apple-gray min-h-screen">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                    <div class="bg-white rounded-[3rem] p-8 md:p-16 shadow-sm overflow-hidden relative">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                            
+                            <!-- Text Content -->
+                            <div class="order-2 md:order-1">
+                                <span class="text-apple-blue text-sm font-semibold tracking-wide uppercase mb-2 block">About Me</span>
+                                <h2 class="text-4xl font-semibold tracking-tight mb-6">Design that speaks. Code that breathes.</h2>
+                                <div class="space-y-6 text-gray-500 text-lg leading-relaxed">
+                                    <p>
+                                        Hi, I’m Myrtle, the creative behind SYSMOKIN.
+                                    </p>
+                                    <p>
+                                        I work at the intersection of design and development, approaching digital projects as complete systems rather than separate tasks. My process blends visual thinking with technical execution, allowing ideas to move seamlessly from concept to launch.
+                                    </p>
+                                    <p>
+                                        I start with intent. Understanding the message, the audience, and the desired outcome informs every decision I make. Design shapes that intent into clear, engaging visuals. Development ensures those visuals perform in real-world conditions. Responsive, accessible, and built to last.
+                                    </p>
+                                    <p>
+                                        My dual skillset is a strategic advantage for clients. There is no gap between design and build and no loss of vision through handoffs. What is imagined is what gets delivered efficiently, consistently, and with precision.
+                                    </p>
+                                    <p>
+                                        I value clarity over complexity and longevity over trends. The work I create is structured, adaptable, and aligned with long-term goals. Whether I am designing visual content or developing full websites, my focus remains the same: to create digital experiences that communicate clearly, function seamlessly, and endure.
+                                    </p>
+                                    
+                                    <!-- Mobile Only Core Competencies (Hidden on Desktop) -->
+                                    <div class="pt-2 md:hidden">
+                                        <h3 class="text-black font-medium text-lg mb-3">Core Competencies</h3>
+                                        <ul class="space-y-3 text-base">
+                                            <li class="flex items-start"><span class="mr-2 mt-1.5 w-1.5 h-1.5 bg-apple-blue rounded-full flex-shrink-0"></span><span><strong class="text-gray-900 font-medium">Design Software:</strong> Adobe Creative Suite (Photoshop, Illustrator, InDesign, After Effects, Premiere Pro), Canva</span></li>
+                                            <li class="flex items-start"><span class="mr-2 mt-1.5 w-1.5 h-1.5 bg-apple-blue rounded-full flex-shrink-0"></span><span><strong class="text-gray-900 font-medium">Web & Digital:</strong> Web Design & Development, UI/UX, SEO, HTML, Full-stack (Frontend & Backend)</span></li>
+                                            <li class="flex items-start"><span class="mr-2 mt-1.5 w-1.5 h-1.5 bg-apple-blue rounded-full flex-shrink-0"></span><span><strong class="text-gray-900 font-medium">Social Media:</strong> Strategy, Content Creation, Audience Engagement</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+        
+                                <!-- Mobile Only Stats / Timeline (Hidden on Desktop) -->
+                                <div class="mt-10 grid grid-cols-2 gap-8 border-t border-gray-100 pt-10 md:hidden">
+                                    <div>
+                                        <h4 class="text-3xl font-bold text-black mb-1">6+</h4>
+                                        <p class="text-sm text-gray-400">Years Experience</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-3xl font-bold text-black mb-1">50+</h4>
+                                        <p class="text-sm text-gray-400">Projects Launched</p>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <!-- Image / Visual -->
+                            <div class="order-1 md:order-2">
+                                <!-- Image Wrapper with Status Card -->
+                                <div class="relative">
+                                    <div class="aspect-[3/4] md:aspect-square rounded-[2rem] overflow-hidden bg-gray-100 relative">
+                                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop" alt="Sysmokin Portrait" class="object-cover w-full h-full">
+                                    </div>
+                                    <!-- Decorative floating card (Restored Position) -->
+                                    <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl hidden md:block z-10">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</div>
+                                            <div>
+                                                <p class="text-xs text-gray-400">Status</p>
+                                                <p class="text-sm font-semibold">Available for work</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Desktop Only Stats / Timeline (Added Below Image) -->
+                                <div class="hidden md:grid grid-cols-2 gap-8 border-t border-gray-100 pt-10 mt-10 relative z-0">
+                                    <div>
+                                        <h4 class="text-3xl font-bold text-black mb-1">6+</h4>
+                                        <p class="text-sm text-gray-400">Years Experience</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-3xl font-bold text-black mb-1">50+</h4>
+                                        <p class="text-sm text-gray-400">Projects Launched</p>
+                                    </div>
+                                </div>
+
+                                <!-- Desktop Only Core Competencies (Below Image & Stats) -->
+                                <div class="hidden md:block mt-12">
+                                    <h3 class="text-black font-medium text-lg mb-3">Core Competencies</h3>
+                                    <ul class="space-y-3 text-base">
+                                        <li class="flex items-start"><span class="mr-2 mt-1.5 w-1.5 h-1.5 bg-apple-blue rounded-full flex-shrink-0"></span><span><strong class="text-gray-900 font-medium">Design Software:</strong> Adobe Creative Suite (Photoshop, Illustrator, InDesign, After Effects, Premiere Pro), Canva</span></li>
+                                        <li class="flex items-start"><span class="mr-2 mt-1.5 w-1.5 h-1.5 bg-apple-blue rounded-full flex-shrink-0"></span><span><strong class="text-gray-900 font-medium">Web & Digital:</strong> Web Design & Development, UI/UX, SEO, HTML, Full-stack (Frontend & Backend)</span></li>
+                                        <li class="flex items-start"><span class="mr-2 mt-1.5 w-1.5 h-1.5 bg-apple-blue rounded-full flex-shrink-0"></span><span><strong class="text-gray-900 font-medium">Social Media:</strong> Strategy, Content Creation, Audience Engagement</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= CONTACT PAGE ================= -->
+        <div id="contact-page" class="page-section">
+            <section class="pt-32 pb-24 bg-apple-gray min-h-screen">
+                <div class="max-w-3xl mx-auto px-6 lg:px-8">
+                    <div class="bg-white rounded-[3rem] p-8 md:p-16 shadow-sm">
+                        <div class="text-center mb-12">
+                             <span class="text-apple-blue text-sm font-semibold tracking-wide uppercase mb-2 block">Contact</span>
+                             <h2 class="text-4xl font-semibold tracking-tight">Let's start a project.</h2>
+                             <p class="text-gray-500 mt-4 text-lg">Tell us about your vision, and we'll take it from there.</p>
+                        </div>
+                        
+                        <form class="space-y-6" onsubmit="event.preventDefault(); alert('Message sent! (Demo)');">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Name</label>
+                                    <input type="text" id="name" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow" placeholder="What's your name?">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Email</label>
+                                    <input type="email" id="email" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow" placeholder="your@email.com">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-2 ml-1">Message</label>
+                                <textarea id="message" rows="5" class="w-full px-6 py-4 bg-apple-gray rounded-2xl border-none focus:ring-2 focus:ring-apple-blue outline-none transition-shadow resize-none" placeholder="Tell me about your project..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-apple-blue text-white font-medium text-lg px-8 py-4 rounded-full hover:bg-apple-hover transition-all transform active:scale-[0.98] shadow-lg shadow-blue-500/20">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Footer (Shared) -->
+    <footer id="footer-contact" class="bg-black text-white py-20 rounded-t-[3rem] mt-auto">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-center mb-16 text-center md:text-left">
+                <h2 class="text-4xl md:text-5xl font-semibold tracking-tight mb-8 md:mb-0">
+                    Let's create something <br> extraordinary.
+                </h2>
+                <a href="#" onclick="router('contact')" class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-black bg-white rounded-full overflow-hidden transition-all duration-300 hover:bg-gray-200 hover:scale-105">
+                    <span class="relative">Start a Project</span>
+                </a>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+                <div class="mb-4 md:mb-0">&copy; 2024 Sysmokin. All rights reserved.</div>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-white transition-colors">Instagram</a>
+                    <a href="#" class="hover:text-white transition-colors">LinkedIn</a>
+                    <a href="https://www.behance.net/sysmokin" target="_blank" class="hover:text-white transition-colors">Behance</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Project Modal Overlay -->
+    <div id="project-modal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-white/80 backdrop-blur-xl transition-opacity opacity-0" id="modal-backdrop"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-[2rem] bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-4xl opacity-0 translate-y-10 scale-95" id="modal-panel">
+                    <button onclick="closeModal()" class="absolute top-6 right-6 z-20 p-2 bg-white/50 backdrop-blur-md rounded-full hover:bg-gray-100 transition-colors">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                    <div id="modal-content" class="bg-white"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Data
+        const projectData = {
+            'project1': {
+                title: "EcoSphere Platform",
+                category: "Web Development",
+                description: "A comprehensive sustainability platform connecting local recycling centers with households. Features include a real-time map, user dashboard, and gamified reward system. Built with React and Node.js.",
+                image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1974&auto=format&fit=crop",
+                tags: ["React", "Tailwind CSS", "Node.js", "Maps API"]
+            },
+            'project2': {
+                title: "FinTrack Mobile",
+                category: "App UI/UX",
+                description: "A minimalist finance tracking application designed for Gen Z. The focus was on reducing cognitive load through clean data visualization and intuitive gesture-based navigation.",
+                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop",
+                tags: ["Figma", "Prototyping", "User Research", "Mobile Design"]
+            },
+            'project3': {
+                title: "Lumina Brand Identity",
+                category: "Branding",
+                description: "Complete visual identity overhaul for a lighting technology startup. The project included logo design, typography selection, and a comprehensive brand guidebook.",
+                image: "https://images.unsplash.com/photo-1586717791821-3f44a5638d48?q=80&w=2070&auto=format&fit=crop",
+                tags: ["Illustrator", "Branding", "Typography", "Print"]
+            },
+            'project4': {
+                title: "Abstract Motion",
+                category: "3D Motion Art",
+                description: "A series of loopable 3D animations created for a digital art installation. Exploring texture, light, and physics simulation to create satisfying visual experiences.",
+                image: "https://images.unsplash.com/photo-1481487484168-9b930d5b7960?q=80&w=2070&auto=format&fit=crop",
+                tags: ["Blender", "After Effects", "Sound Design", "3D Rendering"]
+            }
+        };
+
+        // Router / Page Switching Logic (FIXED: NO BACKTICKS)
+        function router(pageId) {
+            // Check if target page exists before doing anything
+            var targetPageId = pageId + '-page';
+            var targetPage = document.getElementById(targetPageId);
+            
+            if (targetPage) {
+                // Hide all pages
+                var sections = document.querySelectorAll('.page-section');
+                sections.forEach(function(section) {
+                    section.classList.remove('active');
+                });
+                
+                // Show requested page
+                targetPage.classList.add('active');
+                window.scrollTo(0, 0); // Scroll to top
+
+                // Update Nav State
+                var links = document.querySelectorAll('.nav-link');
+                links.forEach(function(link) {
+                    link.classList.remove('active');
+                });
+                
+                var navId = 'nav-' + pageId;
+                var activeLink = document.getElementById(navId);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            } else {
+                console.warn('Page not found:', targetPageId);
+            }
+        }
+
+        // Initialize Home on Load
+        document.addEventListener('DOMContentLoaded', function() {
+            router('home');
+        });
+
+        // Modal Logic
+        const modal = document.getElementById('project-modal');
+        const backdrop = document.getElementById('modal-backdrop');
+        const panel = document.getElementById('modal-panel');
+        const contentContainer = document.getElementById('modal-content');
+        const body = document.body;
+
+        function openModal(projectId) {
+            const data = projectData[projectId];
+            if (!data) return;
+
+            // Using standard strings concatenation to be safe
+            var tagsHtml = data.tags.map(function(tag) {
+                return '<span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">' + tag + '</span>';
+            }).join('');
+
+            contentContainer.innerHTML = 
+                '<div class="h-64 md:h-96 w-full relative">' +
+                    '<img src="' + data.image + '" class="w-full h-full object-cover" alt="' + data.title + '">' +
+                    '<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>' +
+                    '<div class="absolute bottom-6 left-6 md:bottom-10 md:left-10 text-white">' +
+                        '<p class="text-sm font-medium opacity-90 mb-2">' + data.category + '</p>' +
+                        '<h2 class="text-3xl md:text-4xl font-bold">' + data.title + '</h2>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="p-8 md:p-12">' +
+                    '<div class="flex flex-wrap gap-2 mb-6">' +
+                        tagsHtml +
+                    '</div>' +
+                    '<p class="text-gray-600 text-lg leading-relaxed mb-8 max-w-2xl">' + data.description + '</p>' +
+                    '<button class="bg-apple-blue text-white px-8 py-3 rounded-full font-medium hover:bg-apple-hover transition-colors w-full md:w-auto">' +
+                        'View Live Project' +
+                    '</button>' +
+                '</div>';
+
+            modal.classList.remove('hidden');
+            body.style.overflow = 'hidden';
+
+            setTimeout(function() {
+                backdrop.classList.remove('opacity-0');
+                panel.classList.remove('opacity-0', 'translate-y-10', 'scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            backdrop.classList.add('opacity-0');
+            panel.classList.add('opacity-0', 'translate-y-10', 'scale-95');
+
+            setTimeout(function() {
+                modal.classList.add('hidden');
+                body.style.overflow = 'auto';
+            }, 300);
+        }
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === backdrop || e.target.closest('#modal-panel') === null) {
+                closeModal();
+            }
+        });
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+    </script>
+</body>
+</html>
